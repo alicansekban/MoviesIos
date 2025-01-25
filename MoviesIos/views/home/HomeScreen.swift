@@ -8,8 +8,15 @@
 import SwiftUI
 
 struct HomeScreen: View {
+    @StateObject private var viewModel: HomeViewModel = .init()
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            List(viewModel.popularMovies, id: \.id) { movie in
+            
+                Text(movie.title)
+            }
+        }
     }
 }
 

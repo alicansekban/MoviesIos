@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MovieDetailScreen: View {
+    @StateObject var viewModel: MovieDetailViewModel = .init()
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }
