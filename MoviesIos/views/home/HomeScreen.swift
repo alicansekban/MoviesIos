@@ -8,14 +8,19 @@
 import SwiftUI
 
 struct HomeScreen: View {
-    @StateObject private var viewModel: HomeViewModel = .init()
+    @StateObject private var viewModel: HomeViewModel = HomeViewModel()
     
     var body: some View {
         VStack {
             List(viewModel.popularMovies, id: \.id) { movie in
-            
                 Text(movie.title)
+                    .onTapGesture {
+                        
+                    }
             }
+        }
+        .onAppear {
+            viewModel.getPopularMovies()
         }
     }
 }

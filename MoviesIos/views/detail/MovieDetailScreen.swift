@@ -8,12 +8,15 @@
 import SwiftUI
 
 struct MovieDetailScreen: View {
-    @StateObject var viewModel: MovieDetailViewModel = .init()
+    @StateObject var viewModel: MovieDetailViewModel = MovieDetailViewModel()
+    init(movieId: Int) {
+        _viewModel = .init(wrappedValue: MovieDetailViewModel(movieId: movieId))
+    }
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }
 }
 
 #Preview {
-    MovieDetailScreen()
+    MovieDetailScreen(movieId: 0)
 }

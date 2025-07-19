@@ -8,4 +8,8 @@
 import Foundation
 class MovieDetailViewModel : ObservableObject {
     
+    var movieId : Int?
+    init(movieId: Int? = nil) {
+        self.movieId = movieId
+    }
 }
