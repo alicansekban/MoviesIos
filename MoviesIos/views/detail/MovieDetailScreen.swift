@@ -13,8 +13,43 @@ struct MovieDetailScreen: View {
         _viewModel = .init(wrappedValue: MovieDetailViewModel(movieId: movieId))
     }
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
+          ZStack {
+              if viewModel.isLoading {
+                  ProgressView("Loading...")
+              }
+              else if let errorMessage = viewModel.errorMessage {
+                  Text(errorMessage)
+                      .foregroundColor(.red)
+                      .padding()
+              }
+            
+              else if let detail = viewModel.movieDetail {
+                
+                  ScrollView {
+                      VStack(alignment: .leading) {
+                          Text(detail.title ?? "")
+                              .font(.largeTitle)
+                              .fontWeight(.bold)
+                          
+                          Text(detail.overview ?? "")
+                              .padding(.top, 4)
+                          
+                        
+                      }
+                      .padding()
+                  }
+              }
+              
+              else {
+                  EmptyView()
+              }
+          }
+          .navigationTitle(viewModel.movieDetail?.title ?? "Detay")
+          .onAppear {
+              viewModel.getMovieDetail()
+          }
+      }
+    
 }
 
 #Preview {

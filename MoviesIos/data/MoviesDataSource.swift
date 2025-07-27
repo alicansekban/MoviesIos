@@ -56,6 +56,59 @@ class MoviesDataSource {
         }
         task.resume()
     }
+    
+    func fetchMovieDetail(movieId: Int, completion: @escaping (Result<MovieDetail, Error>) -> Void) {
+            
+            // 1. Temel URL'i oluştur.
+        guard var url = URL(string: baseURL) else {
+                completion(.failure(NSError(domain: "Invalid Base URL", code: 400, userInfo: nil)))
+                return
+            }
+            
+            // 2. Path'e gerekli bileşenleri ekle. Bu, en önemli kısım.
+            // /movie/{movieId} yolunu oluşturuyoruz.
+            url.appendPathComponent("movie")
+            url.appendPathComponent("\(movieId)")
+            
+            print("Generated Detail URL: \(url)")
+            
+            // 3. Request'i hazırla (Popüler filmlerle aynı mantık).
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+            
+            // 4. URLSession ile isteği gönder.
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                // Gelen yanıtı ana thread'de işlemek genellikle daha güvenlidir,
+                // özellikle UI güncellemeleri yapılacaksa.
+                DispatchQueue.main.async {
+                    if let error = error {
+                        completion(.failure(error))
+                        return
+                    }
+                    
+                    guard let data = data else {
+                        completion(.failure(NSError(domain: "No Data", code: 500, userInfo: nil)))
+                        return
+                    }
+                    
+                    // 5. Gelen datayı MovieDetail modeline decode et.
+                    do {
+                        let decoder = JSONDecoder()
+                        // JSON'daki snake_case (örn: release_date) anahtarlarını
+                        // Swift'teki camelCase (örn: releaseDate) özelliklerine dönüştür.
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        
+                        let decodedResponse = try decoder.decode(MovieDetail.self, from: data)
+                        completion(.success(decodedResponse))
+                    } catch {
+                        print("JSON Decoding Error: \(error)")
+                        completion(.failure(error))
+                    }
+                }
+            }
+            task.resume()
+        }
 }
 
 // Response Model
@@ -70,4 +123,21 @@ struct MovieData: Decodable, Identifiable {
     let vote_average: Double
     let vote_count: Int
     let poster_path: String
+}
+
+struct MovieDetail: Decodable {
+    let title: String?
+    let overview: String?
+    let posterPath: String?      // Bazen null gelebilir, bu yüzden Optional (?)
+    let backdropPath: String?    // Bu da null gelebilir
+    let releaseDate: String?
+    let voteAverage: Double?
+    let runtime: Int?
+    let genres: [Genre]?
+}
+
+// JSON içindeki "genres" dizisindeki her bir objeyi temsil eder.
+struct Genre: Decodable, Hashable {
+    let id: Int
+    let name: String
 }

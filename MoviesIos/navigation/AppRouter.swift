@@ -22,18 +22,16 @@ class AppRouter : ObservableObject {
     
     func push(_ screen: Screen) {
            path.append(screen)
-       }
+    }
        
-       // Son ekranı yığından çıkarır (pop).
-       func pop() {
-           // Kontrol eklemek her zaman iyidir.
-           if !path.isEmpty {
-               path.removeLast()
-           }
-       }
-       
-       // Tüm yığını temizleyip ana ekrana döner (pop to root).
-       func popToRoot() {
-           path.removeAll()
-       }
+    
+    func pop() {
+        if !path.isEmpty {
+            path.removeLast()
+        }
+    }
+    
+    func popToRoot() {
+        path.removeAll()
+    }
 }
