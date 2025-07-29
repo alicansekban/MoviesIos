@@ -19,14 +19,13 @@ class HomeViewModel: ObservableObject {
     
     func getPopularMovies() {
 
-        dataSource.fetchPopularMovies { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let movies):
-                    self.popularMovies = movies
-                case .failure(let error):
-                    print("Error fetching movies: \(error.localizedDescription)")
-                }
+        dataSource.fetchPopularMovies { [weak self ] result in
+            guard let self else { return }
+            switch result {
+            case .success(let movies):
+                self.popularMovies = movies
+            case .failure(let error):
+                print("Error fetching movies: \(error.localizedDescription)")
             }
         }
     }

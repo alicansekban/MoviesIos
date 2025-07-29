@@ -21,9 +21,10 @@ class MovieDetailViewModel : ObservableObject {
     func getMovieDetail() {
         guard let movieId = movieId else { return }
         dataSource.fetchMovieDetail(movieId: movieId) { [weak self] result in
+            guard let self else { return }
             switch result {
             case .success(let movieDetail):
-                self?.movieDetail = movieDetail
+                self.movieDetail = movieDetail
             case .failure(let error):
                 print("Error: \(error)")
             }
