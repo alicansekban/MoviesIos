@@ -9,6 +9,8 @@ import SwiftUI
 
 struct MovieDetailScreen: View {
     @StateObject var viewModel: MovieDetailViewModel = MovieDetailViewModel()
+    private let imageBaseURL = "https://image.tmdb.org/t/p/w500"
+    
     init(movieId: Int) {
         _viewModel = .init(wrappedValue: MovieDetailViewModel(movieId: movieId))
     }
@@ -26,25 +28,59 @@ struct MovieDetailScreen: View {
               else if let detail = viewModel.movieDetail {
                 
                   ScrollView {
-                      VStack(alignment: .leading) {
-                          Text(detail.title ?? "")
-                              .font(.largeTitle)
-                              .fontWeight(.bold)
+                      VStack(alignment: .leading, spacing: 16) {
+                          
+                          let imageUrl = URL(string: imageBaseURL + detail.posterPath)
+                          AsyncImage(url: imageUrl) { image in
+                                 
+                                 image
+                                     .resizable()
+                                     .scaledToFill()
+                                                          
+                             } placeholder: {
+                                 ProgressView()
+                                     .frame(maxWidth: .infinity, minHeight: 250) // Örnek bir yükseklik
+                             }
+                             .frame(height: 400)
+                             .cornerRadius(20)
+                             .clipped()
+                            
+                          Text("Summary")
+                              .font(.title2)
+                              .fontWeight(.semibold)
+                              .padding(.bottom, 4)
                           
                           Text(detail.overview ?? "")
-                              .padding(.top, 4)
+                              .font(.body)
+                              .fontWeight(.medium)
+                          
+                        
+                          HStack {
+                              Image(systemName: "star.fill")
+                                  .foregroundColor(.yellow)
+                              Text(String(format: "%.1f", detail.voteAverage ?? 0.0))
+                             // Spacer().frame(width: 20)
+                              Image(systemName: "calendar")
+                                  .padding(.leading, 20)
+                              Text(detail.releaseDate ?? "")
+                                  .font(.subheadline)
+                                  .foregroundColor(.secondary)
+                           
+                          }
                           
                         
                       }
                       .padding()
                   }
+            
               }
               
               else {
                   EmptyView()
               }
           }
-          .navigationTitle(viewModel.movieDetail?.title ?? "Detay")
+          .navigationTitle(viewModel.movieDetail?.title ?? "Detail")
+      //    .navigationBarTitleDisplayMode(.inline)
           .onAppear {
               viewModel.getMovieDetail()
           }
